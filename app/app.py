@@ -39,7 +39,7 @@ with st.sidebar:
     
     st.header("Jusification Sheet Template")
     try:
-        template_path = "examples/Justification Sheet Example Template.xlsx"  # repo path
+        template_path = "template/Justification_Sheet_Example_Template.xlsx"  # repo path
         with open(template_path, "rb") as f:
             st.download_button(
                 label="📥 Download Excel Template",
