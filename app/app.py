@@ -136,17 +136,9 @@ with st.sidebar:
 #hf_token = st.secrets.get("HF_API_TOKEN", None)
 
 # --------------------------- Main: top mini info + Step 1 ---------------------------
-# Top row: two mini info boxes
-i1, i2 = st.columns([1, 1])
-with i1:
-    st.markdown('<div class="mini-card"><b>Tips</b><br/>Keep column names exact. COF categories must be A, B, C, D, E. PoF as integer 1 to 5.</div>', unsafe_allow_html=True)
-with i2:
-    st.markdown('<div class="mini-card"><b>What you get</b><br/>A new column: <code>Risk Justification</code> ready to deliver.</div>', unsafe_allow_html=True)
 
-# Step 1 upload block under the mini cards
-#st.markdown('<div class="card">', unsafe_allow_html=True)
-st.markdown('<span class="badge badge-blue">Step 1</span> Upload your Excel', unsafe_allow_html=True)
-uploaded = st.file_uploader("Upload Excel (.xlsx) file as per required Template Format", type=["xlsx"])
+st.markdown('<span class="badge badge-blue">Input</span> Upload Excel (.xlsx) file as per required Template Format', unsafe_allow_html=True)
+uploaded = st.file_uploader("", type=["xlsx"])
 st.markdown('</div>', unsafe_allow_html=True)
 
 # --------------------------- Core Logic ---------------------------
