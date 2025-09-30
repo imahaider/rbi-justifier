@@ -112,6 +112,16 @@ div[data-testid="stFileUploader"] { padding-top: 0rem; }
   padding-top: 0.5rem;
   border-top: 1px solid #e5e7eb;
 }
+/* Tighter gap between the blue badge and uploader */
+.badge-row { margin-bottom: 2px; }                 /* was 4px */
+div[data-testid="stFileUploader"] { 
+  padding-top: 0rem;
+  margin-top: -6px;                                 /* pull uploader closer */
+}
+div[data-testid="stFileUploader"] label { 
+  margin-bottom: 2px;                               /* shrink label spacing (even if hidden) */
+}
+
 </style>
 """, unsafe_allow_html=True)
 
