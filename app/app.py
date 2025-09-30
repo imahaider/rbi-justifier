@@ -129,13 +129,13 @@ with st.sidebar:
 left, right = st.columns([1.35, 1])
 
 with left:
-    st.markdown('<div class="card">', unsafe_allow_html=True)
+    #st.markdown('<div class="card">', unsafe_allow_html=True)
     st.markdown('<span class="badge badge-blue">Step 1</span> Upload your Excel', unsafe_allow_html=True)
     uploaded = st.file_uploader("Upload Excel (.xlsx) file as per required Template Format", type=["xlsx"])
     st.markdown('</div>', unsafe_allow_html=True)
 
 with right:
-    st.markdown('<div class="card"><b>Tips</b><br/>Keep column names exact. Categories must be A, B, C, D, E. PoF as integer 1 to 5.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card"><b>Tips</b><br/>Keep column names exact. COF categories must be A, B, C, D, E. POF as integer 1 to 5.</div>', unsafe_allow_html=True)
     st.markdown('<div class="card"><b>What you get</b><br/>A new column: <code>Risk Justification</code> ready to deliver.</div>', unsafe_allow_html=True)
 
 # --------------------------- Core Logic ---------------------------
