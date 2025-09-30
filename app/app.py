@@ -29,12 +29,6 @@ st.markdown(
 )
 
 # ---------------- Sidebar controls (LLM and Info) ----------------
-with st.sidebar:
-    st.header("LLM Polishing")
-    use_llm = st.toggle("Use open-source LLM polishing", value=False)
-    st.caption("Enable to paraphrase grammar and flow without changing facts.")
-    model_id = st.text_input("Hugging Face model id", value="Qwen/Qwen2.5-7B-Instruct")
-
     # Health check lives in the same block so variable scope is safe
 with st.sidebar:
     st.header("LLM Polishing")
