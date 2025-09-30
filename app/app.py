@@ -16,6 +16,7 @@ from core.llm import polish_with_hf
 
 st.set_page_config(page_title="RBI Risk Justification Generator", page_icon="🛠️", layout="wide")
 st.title("RBI Risk Justification Generator")
+hf_token = st.secrets.get("HF_API_TOKEN", None)
 
 st.markdown(
     "Upload an Excel in the agreed format. The app will add a **Risk Justification** column using your rules. "
