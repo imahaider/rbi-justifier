@@ -23,12 +23,14 @@ st.markdown(
 )
 
 with st.sidebar:
-    #st.header("LLM Polishing")
-    #use_llm = st.toggle("Use open-source LLM polishing", value=False)
-    #st.caption("Enable to paraphrase grammar and flow without changing facts.")
-    #model_id = st.text_input("Hugging Face model id", value="Qwen/Qwen2.5-7B-Instruct")
-    #st.caption("You must accept the model license on your HF account.")
-    #st.markdown("---")
+    """
+    st.header("LLM Polishing")
+    use_llm = st.toggle("Use open-source LLM polishing", value=False)
+    st.caption("Enable to paraphrase grammar and flow without changing facts.")
+    model_id = st.text_input("Hugging Face model id", value="Qwen/Qwen2.5-7B-Instruct")
+    st.caption("You must accept the model license on your HF account.")
+    st.markdown("---")
+    """
     st.header("Info")
     st.write("Required columns:")
     st.code("\n".join(REQUIRED_COLUMNS), language="text")
@@ -55,7 +57,7 @@ if uploaded:
     df["Risk Justification"] = justs
 
     # Optional LLM polishing
-    """
+    #
     if use_llm:
         if not hf_token:
             st.error("LLM enabled but no HF_API_TOKEN set in Streamlit Secrets.")
