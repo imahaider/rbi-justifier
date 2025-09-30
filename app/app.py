@@ -31,14 +31,10 @@ with st.sidebar:
     st.caption("You must accept the model license on your HF account.")
 '''
 with st.sidebar:
-    st.header("LLM Polishing")
-    use_llm = st.toggle("Use open-source LLM polishing", value=False)
-    model_id = st.text_input("Hugging Face model id", value="HuggingFaceH4/zephyr-7b-beta")
-    st.caption("Turn ON and set your HF token in Secrets.")
-    st.markdown("---")
+    st.subheader("LLM connectivity test")
     if st.button("Test LLM now"):
         if not hf_token:
-            st.error("No HF_API_TOKEN in Secrets.")
+            st.error("No HF_API_TOKEN set in Streamlit Secrets.")
         else:
             from core.llm import polish_with_hf
             dummy_payload = {
@@ -54,7 +50,8 @@ with st.sidebar:
                 st.success("LLM call OK:")
                 st.write(out)
             except Exception as e:
-                st.error(f"LLM test failed: {e}")
+                st.error(f"LLM test failed: {type(e).__name__}: {e}")
+
 
 
 
