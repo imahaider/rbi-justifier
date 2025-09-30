@@ -59,7 +59,7 @@ with st.sidebar:
 #hf_token = st.secrets.get("HF_API_TOKEN", None)
 
 
-uploaded = st.file_uploader("Upload Excel (.xlsx)", type=["xlsx"])
+uploaded = st.file_uploader("Upload Excel (.xlsx) file as per required Template Format", type=["xlsx"])
 if uploaded:
     try:
         df = pd.read_excel(uploaded, sheet_name=0)
