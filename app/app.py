@@ -36,25 +36,38 @@ with st.sidebar:
     model_id = st.text_input("Hugging Face model id", value="Qwen/Qwen2.5-7B-Instruct")
 
     # Health check lives in the same block so variable scope is safe
-    if st.button("Test LLM health", key="btn_test_llm"):
+with st.sidebar:
+    st.header("LLM Polishing")
+    use_llm = st.toggle("Use open-source LLM polishing", value=False)
+    model_id = st.text_input("Hugging Face model id", value="Qwen/Qwen2.5-7B-Instruct")
+    st.caption("Enable to paraphrase grammar and flow without changing facts.")
+
+    # 🔽 Add this block here
+    test_llm = st.button("Test LLM health")
+    if 'test_result' not in st.session_state:
+        st.session_state.test_result = ""
+
+    if test_llm:
         try:
-            hf_token_test = st.secrets.get("HF_API_TOKEN")
-            if not hf_token_test:
-                st.error("No HF_API_TOKEN found in Streamlit Secrets. Add it in App → Settings → Secrets.")
-            else:
-                demo_payload = {
-                    "component": "TEST", "risk_category": "MEDIUM",
-                    "pof": 4, "int_corr_rate": 0.10, "ext_corr_rate": 0.03,
-                    "inspection_priority": 15, "flamm_cat": "B", "tox_cat": "B", "prod_cat": "E",
-                    "governing_cof": "B", "governing_sources": ["flammable", "toxic"],
-                    "inventory_level": "medium", "flamm_area_level": "medium",
-                    "fluid_type": "Flammable", "fluid": "C4", "phase": "Gas", "toxic": "H2S"
-                }
-                demo_draft = "The risk is MEDIUM because PoF = 4 with minimal corrosion; governing CoF is Category B."
-                text = polish_with_hf(model_id, hf_token_test, demo_payload, demo_draft)
-                st.info(f"LLM responded:\n\n{text}")
+            from core.llm import polish_with_hf
+            demo_payload = {
+                "component":"TEST","risk_category":"MEDIUM","pof":4,
+                "int_corr_rate":0.10,"ext_corr_rate":0.03,"inspection_priority":15,
+                "flamm_cat":"B","tox_cat":"B","prod_cat":"E","governing_cof":"B",
+                "governing_sources":["flammable","toxic"],
+                "inventory_level":"medium","flamm_area_level":"medium",
+                "fluid_type":"Flammable","fluid":"C4","phase":"Gas","toxic":"H2S"
+            }
+            demo_draft = "The risk is MEDIUM because PoF = 4 with minimal corrosion; governing CoF is Category B."
+            text = polish_with_hf(model_id, st.secrets.get("HF_API_TOKEN"), demo_payload, demo_draft)
+            st.session_state.test_result = f"OK: {text[:200]}"
         except Exception as e:
-            st.error(f"LLM error: {e}")
+            import traceback
+            st.session_state.test_result = f"ERROR: {type(e).__name__}: {str(e)}\n\n{traceback.format_exc(limit=1)}"
+
+    if st.session_state.test_result:
+        st.info(st.session_state.test_result)
+
 
     st.markdown("---")
     st.header("Info")
