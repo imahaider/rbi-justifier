@@ -16,64 +16,24 @@ from core.llm import polish_with_hf
 
 st.set_page_config(page_title="RBI Risk Justification Generator", page_icon="🛠️", layout="wide")
 st.title("RBI Risk Justification Generator")
-hf_token = st.secrets.get("HF_API_TOKEN", None)
 
 st.markdown(
     "Upload an Excel in the agreed format. The app will add a **Risk Justification** column using your rules. "
     "Optionally, it will polish phrasing with an open-source LLM while keeping facts unchanged."
 )
-'''
+
 with st.sidebar:
     st.header("LLM Polishing")
     use_llm = st.toggle("Use open-source LLM polishing", value=False)
     st.caption("Enable to paraphrase grammar and flow without changing facts.")
-    model_id = st.text_input("Hugging Face model id", value="HuggingFaceH4/zephyr-7b-beta")
+    model_id = st.text_input("Hugging Face model id", value="Qwen/Qwen2.5-7B-Instruct")
     st.caption("You must accept the model license on your HF account.")
-'''
-with st.sidebar:
-    use_llm = st.toggle("Use open-source LLM polishing", value=False)
-    st.caption("Enable to paraphrase grammar and flow without changing facts.")
-    model_id = st.text_input("Hugging Face model id", value="HuggingFaceH4/zephyr-7b-beta")
-    st.subheader("LLM connectivity test")
-    if st.button("Test LLM now"):
-        if not hf_token:
-            st.error("No HF_API_TOKEN set in Streamlit Secrets.")
-        else:
-            from core.llm import polish_with_hf
-            dummy_payload = {
-                "component":"TEST-001","risk_category":"MEDIUM",
-                "pof":4,"int_corr_rate":0.10,"ext_corr_rate":0.03,
-                "inspection_priority":15,"flamm_cat":"B","tox_cat":"B","prod_cat":"E",
-                "governing_cof":"B","governing_sources":["flammable","toxic"],
-                "inventory_level":"medium","flamm_area_level":"medium",
-                "fluid_type":"Flammable","fluid":"C4","phase":"Gas","toxic":"H2S",
-            }
-            try:
-                out = polish_with_hf(model_id, hf_token, dummy_payload, "Draft paragraph.")
-                st.success("LLM call OK:")
-                st.write(out)
-            except Exception as e:
-                st.error(f"LLM test failed: {type(e).__name__}: {e}")
-
-
-
-
-
-
-
-
-
-
-
-    
     st.markdown("---")
     st.header("Info")
     st.write("Required columns:")
     st.code("\n".join(REQUIRED_COLUMNS), language="text")
 
 hf_token = st.secrets.get("HF_API_TOKEN", None)
-if use_llm:
-    st.write(f"Debug: Token loaded? {'Yes' if hf_token else 'No'} (Length: {len(hf_token) if hf_token else 0})")
 
 
 uploaded = st.file_uploader("Upload Excel (.xlsx)", type=["xlsx"])
