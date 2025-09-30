@@ -84,8 +84,7 @@ section[data-testid="stSidebar"] .block-container {padding: 1rem;}
 
 # --------------------------- Header ---------------------------
 st.title("RBI Risk Justification Generator")
-st.markdown('<div class="app-subtitle">Upload your Excel in the standard template and get audit-ready justifications for each component. Optional LLM polishing is planned.</div>', unsafe_allow_html=True)
-st.markdown("Developed by Muhammad Ali Haider")
+st.markdown('<div class="app-subtitle">Developed by Muhammad Ali Haider</div>', unsafe_allow_html=True)
 
 # --------------------------- Sidebar ---------------------------
 with st.sidebar:
@@ -97,8 +96,8 @@ with st.sidebar:
     # st.caption("You must accept the model license on your HF account.")
     
     st.header("About")
-    st.write("Upload an Excel in the Template format. The app will add a **Risk Justification** for each component of RBI Analysis by using the data provided.<br>"
-    "Future Update, it will be polish phrasing with an open-source LLM while keeping facts unchanged.",
+    st.write("Upload your Excel in the standard template. The app will add a **Risk Justification** for each component of RBI Analysis by using the data provided.<br>"
+    "Future Update, Optional LLM polishing using AI is planned.",
     unsafe_allow_html=True)
     
 
