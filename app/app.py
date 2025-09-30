@@ -44,7 +44,7 @@ h1 {
   color: #334155; font-size: 0.98rem; margin: 0 0 1.0rem 0;
 }
 
-/* Card style for main panels */
+/* Card styles */
 .card {
   background: #ffffff;
   border: 1px solid #e5e7eb;
@@ -52,6 +52,17 @@ h1 {
   padding: 16px 18px;
   box-shadow: 0 2px 10px rgba(2,6,23,0.06);
   margin-bottom: 14px;
+}
+
+/* Mini cards for compact info */
+.mini-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: 0 1px 6px rgba(2,6,23,0.05);
+  font-size: 0.86rem;
+  color: #334155;
 }
 
 /* Badges */
@@ -124,19 +135,19 @@ with st.sidebar:
 
 #hf_token = st.secrets.get("HF_API_TOKEN", None)
 
-# --------------------------- Main: aligned blocks ---------------------------
-# Row 1: upload panel (left) + two helper cards (right)
-left, right = st.columns([1.35, 1])
+# --------------------------- Main: top mini info + Step 1 ---------------------------
+# Top row: two mini info boxes
+i1, i2 = st.columns([1, 1])
+with i1:
+    st.markdown('<div class="mini-card"><b>Tips</b><br/>Keep column names exact. COF categories must be A, B, C, D, E. PoF as integer 1 to 5.</div>', unsafe_allow_html=True)
+with i2:
+    st.markdown('<div class="mini-card"><b>What you get</b><br/>A new column: <code>Risk Justification</code> ready to deliver.</div>', unsafe_allow_html=True)
 
-with left:
-    #st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.markdown('<span class="badge badge-blue">Step 1</span> Upload your Excel', unsafe_allow_html=True)
-    uploaded = st.file_uploader("Upload Excel (.xlsx) file as per required Template Format", type=["xlsx"])
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with right:
-    st.markdown('<div class="card"><b>Tips</b><br/>Keep column names exact. COF categories must be A, B, C, D, E. POF as integer 1 to 5.</div>', unsafe_allow_html=True)
-    st.markdown('<div class="card"><b>What you get</b><br/>A new column: <code>Risk Justification</code> ready to deliver.</div>', unsafe_allow_html=True)
+# Step 1 upload block under the mini cards
+st.markdown('<div class="card">', unsafe_allow_html=True)
+st.markdown('<span class="badge badge-blue">Step 1</span> Upload your Excel', unsafe_allow_html=True)
+uploaded = st.file_uploader("Upload Excel (.xlsx) file as per required Template Format", type=["xlsx"])
+st.markdown('</div>', unsafe_allow_html=True)
 
 # --------------------------- Core Logic ---------------------------
 if uploaded:
