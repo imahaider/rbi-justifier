@@ -19,16 +19,16 @@ st.title("RBI Risk Justification Generator")
 
 st.markdown(
     "Upload an Excel in the agreed format. The app will add a **Risk Justification** column using your rules. "
-    "Optionally, it will polish phrasing with an open-source LLM while keeping facts unchanged."
+    "Future Update, it will polish phrasing with an open-source LLM while keeping facts unchanged."
 )
 
 with st.sidebar:
-    st.header("LLM Polishing")
-    use_llm = st.toggle("Use open-source LLM polishing", value=False)
-    st.caption("Enable to paraphrase grammar and flow without changing facts.")
-    model_id = st.text_input("Hugging Face model id", value="Qwen/Qwen2.5-7B-Instruct")
-    st.caption("You must accept the model license on your HF account.")
-    st.markdown("---")
+    #st.header("LLM Polishing")
+    #use_llm = st.toggle("Use open-source LLM polishing", value=False)
+    #st.caption("Enable to paraphrase grammar and flow without changing facts.")
+    #model_id = st.text_input("Hugging Face model id", value="Qwen/Qwen2.5-7B-Instruct")
+    #st.caption("You must accept the model license on your HF account.")
+    #st.markdown("---")
     st.header("Info")
     st.write("Required columns:")
     st.code("\n".join(REQUIRED_COLUMNS), language="text")
