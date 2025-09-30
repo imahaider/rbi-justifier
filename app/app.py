@@ -144,7 +144,7 @@ with i2:
     st.markdown('<div class="mini-card"><b>What you get</b><br/>A new column: <code>Risk Justification</code> ready to deliver.</div>', unsafe_allow_html=True)
 
 # Step 1 upload block under the mini cards
-st.markdown('<div class="card">', unsafe_allow_html=True)
+#st.markdown('<div class="card">', unsafe_allow_html=True)
 st.markdown('<span class="badge badge-blue">Step 1</span> Upload your Excel', unsafe_allow_html=True)
 uploaded = st.file_uploader("Upload Excel (.xlsx) file as per required Template Format", type=["xlsx"])
 st.markdown('</div>', unsafe_allow_html=True)
@@ -164,7 +164,7 @@ if uploaded:
             st.stop()
 
     # Status badges
-    st.markdown('<span class="badge badge-green">Schema OK</span> <span class="badge badge-violet">Ready to generate</span>', unsafe_allow_html=True)
+    #st.markdown('<span class="badge badge-green">Schema OK</span> <span class="badge badge-violet">Ready to generate</span>', unsafe_allow_html=True)
 
     # Build draft justifications
     with st.spinner("Generating justifications using rule-based engine..."):
@@ -221,7 +221,7 @@ if uploaded:
 
     # Preview
     st.markdown("### Preview")
-    st.markdown('<div class="card">', unsafe_allow_html=True)
+
     st.dataframe(df.head(20), use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
