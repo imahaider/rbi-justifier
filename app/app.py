@@ -55,6 +55,11 @@ with st.sidebar:
             )
     except FileNotFoundError:
         st.warning("Template not found in the repo at: examples/Justification Sheet Example Template.xlsx")
+        
+    st.markdown("---")
+    st.header("Info")
+    st.write("Mandatory columns:")
+    st.code("\n".join(REQUIRED_COLUMNS), language="text")
 
 #hf_token = st.secrets.get("HF_API_TOKEN", None)
 
