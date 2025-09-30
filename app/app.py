@@ -55,6 +55,7 @@ if uploaded:
     df["Risk Justification"] = justs
 
     # Optional LLM polishing
+    '''
     if use_llm:
         if not hf_token:
             st.error("LLM enabled but no HF_API_TOKEN set in Streamlit Secrets.")
@@ -100,7 +101,7 @@ if uploaded:
             df["Risk Justification"] = polished
 
     st.success("Done. Preview below and download Excel.")
-
+'''
     st.dataframe(df.head(20))
 
     # Download button
