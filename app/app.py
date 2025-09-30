@@ -42,7 +42,7 @@ with st.sidebar:
         template_path = "template/Justification_Sheet_Example_Template.xlsx"  # repo path
         with open(template_path, "rb") as f:
             st.download_button(
-                label="📥 Download Excel Template",
+                label="📥 Download Jusification Sheet Template",
                 data=f,
                 file_name="Justification_Sheet_Example_Template.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
