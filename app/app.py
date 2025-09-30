@@ -157,13 +157,6 @@ with st.sidebar:
 
 #hf_token = st.secrets.get("HF_API_TOKEN", None)
 
-# --------------------------- Main: concise upload row ---------------------------
-# Small info row (optional mini cards)
-i1, i2 = st.columns([1, 1])
-with i1:
-    st.markdown('<div class="mini-card"><b>Tips</b><br/>Use exact column names. CoF letters A–E; PoF integers 1–5.</div>', unsafe_allow_html=True)
-with i2:
-    st.markdown('<div class="mini-card"><b>Output</b><br/>Adds: <code>Risk Justification</code> column for every component.</div>', unsafe_allow_html=True)
 
 # Blue badge and uploader with minimal gap
 st.markdown('<div class="badge-row"><span class="badge badge-blue"> Upload Excel (.xlsx) file as per required Template Format</span></div>', unsafe_allow_html=True)
