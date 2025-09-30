@@ -30,12 +30,13 @@ with st.sidebar:
     # st.caption("Enable to paraphrase grammar and flow without changing facts.")
     # model_id = st.text_input("Hugging Face model id", value="Qwen/Qwen2.5-7B-Instruct")
     # st.caption("You must accept the model license on your HF account.")
-    # st.markdown("---")
+    
     
     st.header("Info")
     st.write("Required columns:")
     st.code("\n".join(REQUIRED_COLUMNS), language="text")
 
+    st.markdown("---")
     
     st.header("Jusification Sheet Template")
     try:
@@ -126,4 +127,4 @@ if uploaded:
     out = io.BytesIO()
     with pd.ExcelWriter(out, engine="xlsxwriter") as writer:
         df.to_excel(writer, sheet_name="Table1", index=False)
-    st.download_button("Download updated Excel", data=out.getvalue(), file_name="RBI_Justifications.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    st.download_button("Download updated Excel with Justifications", data=out.getvalue(), file_name="RBI_Justifications.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
