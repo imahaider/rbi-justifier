@@ -36,7 +36,22 @@ with st.sidebar:
     st.write("Required columns:")
     st.code("\n".join(REQUIRED_COLUMNS), language="text")
 
-hf_token = st.secrets.get("HF_API_TOKEN", None)
+    
+    st.header("Jusification Sheet Template")
+    try:
+        template_path = "examples/Justification Sheet Example Template.xlsx"  # repo path
+        with open(template_path, "rb") as f:
+            st.download_button(
+                label="📥 Download Excel Template",
+                data=f,
+                file_name="Justification_Sheet_Example_Template.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                type="primary",
+            )
+    except FileNotFoundError:
+        st.warning("Template not found in the repo at: examples/Justification Sheet Example Template.xlsx")
+
+#hf_token = st.secrets.get("HF_API_TOKEN", None)
 
 
 uploaded = st.file_uploader("Upload Excel (.xlsx)", type=["xlsx"])
