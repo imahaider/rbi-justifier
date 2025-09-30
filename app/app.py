@@ -12,7 +12,7 @@ from core.schema import missing_columns, REQUIRED_COLUMNS
 from core.generator import build_all_justifications
 from core.rules import three_sigma_levels, classify_three_sigma, governing_cof
 from core.validate import safe_keep_or_fallback
-from core.llm import polish_with_hf
+#from core.llm import polish_with_hf
 
 # --------------------------- Modern Look: page config + CSS ---------------------------
 st.set_page_config(page_title="RBI Risk Justification Generator", page_icon="🛠️", layout="wide")
