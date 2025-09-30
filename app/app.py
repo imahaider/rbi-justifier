@@ -137,7 +137,7 @@ with st.sidebar:
 
 # --------------------------- Main: top mini info + Step 1 ---------------------------
 
-st.markdown('<span class="badge badge-blue">Input</span> Upload Excel (.xlsx) file as per required Template Format', unsafe_allow_html=True)
+st.markdown('<span class="badge badge-blue"> Upload Excel (.xlsx) file as per required Template Format</span>', unsafe_allow_html=True)
 uploaded = st.file_uploader("", type=["xlsx"])
 st.markdown('</div>', unsafe_allow_html=True)
 
