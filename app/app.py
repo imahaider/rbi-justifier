@@ -22,7 +22,7 @@ st.markdown("""
 <style>
 /* Container sizing for consistent alignment */
 .block-container {
-  padding-top: 1.25rem !important;
+  padding-top: 1.0rem !important;    /* slightly tighter */
   padding-bottom: 2rem !important;
   max-width: 1200px;
 }
@@ -32,14 +32,21 @@ h1 {
   font-weight: 800 !important;
   line-height: 1.15 !important;
   letter-spacing: 0.2px;
-  margin: 0 0 0.4rem 0 !important;
+  margin: 0 0 0.25rem 0 !important;  /* tighter space under title */
   background: linear-gradient(90deg,#0ea5e9,#22c55e,#a855f7);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-/* Subtitle under the title */
+/* Gray title note directly under the title */
+.title-note {
+  color: #6b7280;                    /* gray-500 */
+  font-size: 0.92rem;
+  margin: 0 0 0.75rem 0;             /* tight under-note spacing */
+}
+
+/* Subtitle under the note (if needed later) */
 .app-subtitle{
   color: #334155; font-size: 0.98rem; margin: 0 0 1.0rem 0;
 }
@@ -90,12 +97,27 @@ h1 {
 
 /* Sidebar spacing */
 section[data-testid="stSidebar"] .block-container {padding: 1rem;}
+
+/* ----- Tighten gap between the badge and file uploader ----- */
+.badge-row { margin-bottom: 4px; }  /* small space under the badge */
+div[data-testid="stFileUploader"] > div:first-child { margin-top: 0.25rem; }  /* pull uploader closer */
+div[data-testid="stFileUploader"] { padding-top: 0rem; }
+
+/* Footer */
+.footer {
+  margin-top: 1.5rem; 
+  color: #6b7280;
+  text-align: center;
+  font-size: 0.9rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e5e7eb;
+}
 </style>
 """, unsafe_allow_html=True)
 
 # --------------------------- Header ---------------------------
 st.title("RBI Risk Justification Generator")
-st.markdown('<div class="app-subtitle">Developed by Muhammad Ali Haider</div>', unsafe_allow_html=True)
+st.markdown('<div class="title-note">Developed by Muhammad Ali Haider</div>', unsafe_allow_html=True)
 
 # --------------------------- Sidebar ---------------------------
 with st.sidebar:
@@ -135,11 +157,17 @@ with st.sidebar:
 
 #hf_token = st.secrets.get("HF_API_TOKEN", None)
 
-# --------------------------- Main: top mini info + Step 1 ---------------------------
+# --------------------------- Main: concise upload row ---------------------------
+# Small info row (optional mini cards)
+i1, i2 = st.columns([1, 1])
+with i1:
+    st.markdown('<div class="mini-card"><b>Tips</b><br/>Use exact column names. CoF letters A–E; PoF integers 1–5.</div>', unsafe_allow_html=True)
+with i2:
+    st.markdown('<div class="mini-card"><b>Output</b><br/>Adds: <code>Risk Justification</code> column for every component.</div>', unsafe_allow_html=True)
 
-st.markdown('<span class="badge badge-blue"> Upload Excel (.xlsx) file as per required Template Format</span>', unsafe_allow_html=True)
+# Blue badge and uploader with minimal gap
+st.markdown('<div class="badge-row"><span class="badge badge-blue"> Upload Excel (.xlsx) file as per required Template Format</span></div>', unsafe_allow_html=True)
 uploaded = st.file_uploader("", type=["xlsx"])
-st.markdown('</div>', unsafe_allow_html=True)
 
 # --------------------------- Core Logic ---------------------------
 if uploaded:
@@ -154,9 +182,6 @@ if uploaded:
         if miss:
             st.error(f"Missing required columns: {miss}")
             st.stop()
-
-    # Status badges
-    #st.markdown('<span class="badge badge-green">Schema OK</span> <span class="badge badge-violet">Ready to generate</span>', unsafe_allow_html=True)
 
     # Build draft justifications
     with st.spinner("Generating justifications using rule-based engine..."):
@@ -213,9 +238,7 @@ if uploaded:
 
     # Preview
     st.markdown("### Preview")
-
     st.dataframe(df.head(20), use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
     # Download button
     st.markdown("### Export")
@@ -228,3 +251,6 @@ if uploaded:
         file_name="RBI_Justifications.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
+# --------------------------- Footer ---------------------------
+st.markdown('<div class="footer">© 2025 Muhammad Ali Haider. All rights reserved.</div>', unsafe_allow_html=True)
