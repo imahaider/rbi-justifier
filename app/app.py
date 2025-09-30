@@ -35,6 +35,33 @@ with st.sidebar:
 
 hf_token = st.secrets.get("HF_API_TOKEN", None)
 
+#begin
+if 'test_result' not in st.session_state:
+    st.session_state.test_result = ""
+
+if test_llm:
+    try:
+        from core.llm import polish_with_hf
+        demo_payload = {
+            "component":"TEST", "risk_category":"MEDIUM",
+            "pof":4, "int_corr_rate":0.10, "ext_corr_rate":0.03,
+            "inspection_priority":15, "flamm_cat":"B", "tox_cat":"B", "prod_cat":"E",
+            "governing_cof":"B", "governing_sources":["flammable","toxic"],
+            "inventory_level":"medium", "flamm_area_level":"medium",
+            "fluid_type":"Flammable", "fluid":"C4", "phase":"Gas", "toxic":"H2S"
+        }
+        demo_draft = "The risk is MEDIUM because PoF = 4 with minimal corrosion; governing CoF is Category B."
+        text = polish_with_hf(model_id, st.secrets.get("HF_API_TOKEN"), demo_payload, demo_draft)
+        st.session_state.test_result = text
+    except Exception as e:
+        st.session_state.test_result = f"LLM error: {e}"
+
+if st.session_state.test_result:
+    st.info(f"LLM says: {st.session_state.test_result[:400]}")
+
+
+#end
+
 uploaded = st.file_uploader("Upload Excel (.xlsx)", type=["xlsx"])
 if uploaded:
     try:
