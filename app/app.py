@@ -16,21 +16,35 @@ from core.llm import polish_with_hf
 
 # --------------------------- Modern Look: page config + CSS ---------------------------
 st.set_page_config(page_title="RBI Risk Justification Generator", page_icon="🛠️", layout="wide")
+
+# Global CSS: safe, responsive, no clipping
 st.markdown("""
 <style>
-/* Global tweaks */
-.block-container {padding-top: 1.2rem; padding-bottom: 2rem; max-width: 1200px;}
-/* Title styling */
-.app-title{
-  font-weight: 800; font-size: 2.2rem; line-height: 1.15;
+/* Container sizing for consistent alignment */
+.block-container {
+  padding-top: 1.25rem !important;
+  padding-bottom: 2rem !important;
+  max-width: 1200px;
+}
+
+/* Make the default Streamlit H1 look modern without clipping */
+h1 {
+  font-weight: 800 !important;
+  line-height: 1.15 !important;
+  letter-spacing: 0.2px;
+  margin: 0 0 0.4rem 0 !important;
   background: linear-gradient(90deg,#0ea5e9,#22c55e,#a855f7);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-  letter-spacing: 0.3px; margin-bottom: 0.25rem;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
+
+/* Subtitle under the title */
 .app-subtitle{
-  color: #334155; font-size: 0.98rem; margin-top: 0.1rem; margin-bottom: 1.0rem;
+  color: #334155; font-size: 0.98rem; margin: 0 0 1.0rem 0;
 }
-/* Cards */
+
+/* Card style for main panels */
 .card {
   background: #ffffff;
   border: 1px solid #e5e7eb;
@@ -39,6 +53,8 @@ st.markdown("""
   box-shadow: 0 2px 10px rgba(2,6,23,0.06);
   margin-bottom: 14px;
 }
+
+/* Badges */
 .badge {
   display: inline-block; padding: 4px 10px; border-radius: 9999px; font-size: 0.78rem;
   font-weight: 600; border: 1px solid #d1d5db; color: #111827; background: #f9fafb;
@@ -46,6 +62,7 @@ st.markdown("""
 .badge-green { border-color:#86efac; background:#ecfdf5; color:#065f46; }
 .badge-blue  { border-color:#93c5fd; background:#eff6ff; color:#1e3a8a; }
 .badge-violet{ border-color:#c4b5fd; background:#f5f3ff; color:#4c1d95; }
+
 /* Buttons */
 .stButton>button, .stDownloadButton>button {
   border-radius: 9999px; padding: 0.5rem 1rem; font-weight: 600;
@@ -54,19 +71,21 @@ st.markdown("""
 .stDownloadButton>button {
   background: linear-gradient(90deg,#0ea5e9,#22c55e,#a855f7); color: white; border: none;
 }
-/* Dataframe */
-[data-testid="stDataFrame"] div[role="table"] {border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb;}
-/* Sidebar */
+
+/* Dataframe frame */
+[data-testid="stDataFrame"] div[role="table"] {
+  border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb;
+}
+
+/* Sidebar spacing */
 section[data-testid="stSidebar"] .block-container {padding: 1rem;}
 </style>
 """, unsafe_allow_html=True)
 
 # --------------------------- Header ---------------------------
-st.markdown('<div class="app-title">RBI Risk Justification Generator</div>', unsafe_allow_html=True)
+st.title("RBI Risk Justification Generator")
 st.markdown('<div class="app-subtitle">Upload your Excel in the standard template and get audit-ready justifications for each component. Optional LLM polishing is planned.</div>', unsafe_allow_html=True)
-st.markdown(
-    "Developed by Muhammad Ali Haider"
-)
+st.markdown("Developed by Muhammad Ali Haider")
 
 # --------------------------- Sidebar ---------------------------
 with st.sidebar:
@@ -78,12 +97,11 @@ with st.sidebar:
     # st.caption("You must accept the model license on your HF account.")
     
     st.header("About")
-    st.write(
-        "Upload an Excel in the Template format. The app will add a **Risk Justification** for each component of RBI Analysis by using the data provided.<br>"
-        "Future Update, it will be polish phrasing with an open-source LLM while keeping facts unchanged.",
-        unsafe_allow_html=True
-    )
+    st.write("Upload an Excel in the Template format. The app will add a **Risk Justification** for each component of RBI Analysis by using the data provided.<br>"
+    "Future Update, it will be polish phrasing with an open-source LLM while keeping facts unchanged.",
+    unsafe_allow_html=True)
     
+
     st.markdown("---")
     
     st.header("Jusification Sheet Template")
@@ -107,16 +125,19 @@ with st.sidebar:
 
 #hf_token = st.secrets.get("HF_API_TOKEN", None)
 
-# --------------------------- Uploader + Hints ---------------------------
-with st.container():
-    c1, c2, c3 = st.columns([1.2, 1, 1])
-    with c1:
-        st.markdown('<span class="badge badge-blue">Step 1</span> Upload your Excel', unsafe_allow_html=True)
-        uploaded = st.file_uploader("Upload Excel (.xlsx) file as per required Template Format", type=["xlsx"])
-    with c2:
-        st.markdown('<div class="card"><b>Tips</b><br/>Keep column names exact. Categories must be A, B, C, D, E. PoF as integer 1 to 5.</div>', unsafe_allow_html=True)
-    with c3:
-        st.markdown('<div class="card"><b>What you get</b><br/>A new column: <code>Risk Justification</code> ready to deliver.</div>', unsafe_allow_html=True)
+# --------------------------- Main: aligned blocks ---------------------------
+# Row 1: upload panel (left) + two helper cards (right)
+left, right = st.columns([1.35, 1])
+
+with left:
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown('<span class="badge badge-blue">Step 1</span> Upload your Excel', unsafe_allow_html=True)
+    uploaded = st.file_uploader("Upload Excel (.xlsx) file as per required Template Format", type=["xlsx"])
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with right:
+    st.markdown('<div class="card"><b>Tips</b><br/>Keep column names exact. Categories must be A, B, C, D, E. PoF as integer 1 to 5.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card"><b>What you get</b><br/>A new column: <code>Risk Justification</code> ready to deliver.</div>', unsafe_allow_html=True)
 
 # --------------------------- Core Logic ---------------------------
 if uploaded:
@@ -132,7 +153,7 @@ if uploaded:
             st.error(f"Missing required columns: {miss}")
             st.stop()
 
-    # Quick status badges
+    # Status badges
     st.markdown('<span class="badge badge-green">Schema OK</span> <span class="badge badge-violet">Ready to generate</span>', unsafe_allow_html=True)
 
     # Build draft justifications
@@ -190,7 +211,9 @@ if uploaded:
 
     # Preview
     st.markdown("### Preview")
+    st.markdown('<div class="card">', unsafe_allow_html=True)
     st.dataframe(df.head(20), use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
     # Download button
     st.markdown("### Export")
@@ -203,13 +226,3 @@ if uploaded:
         file_name="RBI_Justifications.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-
-# --------------------------- Footer ---------------------------
-st.markdown(
-    """
-    <br>
-    <div style="text-align:center; color:#64748b; font-size:0.9rem;">
-      Built for fast, consistent RBI narratives. Your rules, your categories, your wording.
-    </div>
-    """, unsafe_allow_html=True
-)
