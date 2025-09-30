@@ -31,9 +31,13 @@ with st.sidebar:
     # model_id = st.text_input("Hugging Face model id", value="Qwen/Qwen2.5-7B-Instruct")
     # st.caption("You must accept the model license on your HF account.")
     
-    
+    st.header("About")
+    st.write("Upload an Excel in the Template format. The app will add a **Risk Justification** for each component of RBI Analysis by using the data provided.<br>"
+    "Future Update, it will be polish phrasing with an open-source LLM while keeping facts unchanged.",
+    unsafe_allow_html=True)
+    st.markdown("---")
     st.header("Info")
-    st.write("Required columns:")
+    st.write("Mandatory columns:")
     st.code("\n".join(REQUIRED_COLUMNS), language="text")
 
     st.markdown("---")
