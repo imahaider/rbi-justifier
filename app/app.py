@@ -20,6 +20,7 @@ st.title("RBI Risk Justification Generator")
 st.markdown(
     "Upload an Excel in the agreed format. The app will add a **Risk Justification** column using your rules.<br>"
     "Future Update, it will polish phrasing with an open-source LLM while keeping facts unchanged."
+    unsafe_allow_html=True
 )
 
 with st.sidebar:
