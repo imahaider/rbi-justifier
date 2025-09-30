@@ -70,6 +70,12 @@ with st.sidebar:
 
 # Token for polishing (read once)
 HF_TOKEN = st.secrets.get("HF_API_TOKEN", None)
+token = st.secrets.get("HF_API_TOKEN")
+if token:
+    st.sidebar.caption(f"HF token loaded: hf_{len(token)-3} chars (masked)")
+else:
+    st.sidebar.error("HF_API_TOKEN not found in Secrets")
+
 
 # ---------------- File upload ----------------
 uploaded = st.file_uploader("Upload Excel (.xlsx)", type=["xlsx"])
