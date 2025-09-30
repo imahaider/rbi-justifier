@@ -34,6 +34,8 @@ with st.sidebar:
     st.code("\n".join(REQUIRED_COLUMNS), language="text")
 
 hf_token = st.secrets.get("HF_API_TOKEN", None)
+if use_llm:
+    st.write(f"Debug: Token loaded? {'Yes' if hf_token else 'No'} (Length: {len(hf_token) if hf_token else 0})")
 
 
 uploaded = st.file_uploader("Upload Excel (.xlsx)", type=["xlsx"])
