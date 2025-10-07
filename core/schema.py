@@ -16,11 +16,12 @@ REQUIRED_COLUMNS = [
     "Toxic Fluid",
     "Inventory",
     "Flammable Affected Area",
-    # Optional: "Controlling Corr Rate" (if present, we use it; otherwise we compute CCR=max(Int,Ext))
+    "Int Controlling Corrosion Rate",   # NEW: preferred CCR input column
 ]
 
+# Back-compat alias (optional). The app still works if older sheets use this.
 OPTIONAL_COLUMNS = [
-    "Int Controlling Corrosion Rate",
+    "Controlling Corr Rate",
 ]
 
 CATEGORY_ORDER = {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}  # lower = worse
