@@ -1,3 +1,5 @@
+# core/schema.py
+
 REQUIRED_COLUMNS = [
     "Component",
     "Risk Category",
@@ -14,9 +16,14 @@ REQUIRED_COLUMNS = [
     "Toxic Fluid",
     "Inventory",
     "Flammable Affected Area",
+    # Optional: "Controlling Corr Rate" (if present, we use it; otherwise we compute CCR=max(Int,Ext))
 ]
 
-CATEGORY_ORDER = {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
+OPTIONAL_COLUMNS = [
+    "Int Controlling Corrosion Rate",
+]
+
+CATEGORY_ORDER = {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}  # lower = worse
 
 def missing_columns(df):
     return [c for c in REQUIRED_COLUMNS if c not in df.columns]
