@@ -1,6 +1,5 @@
 # core/rules.py
 import math
-import numpy as np
 from .schema import CATEGORY_ORDER
 
 # ------------------------
@@ -32,7 +31,6 @@ def governing_cof(flam, tox, prod):
     if str(prod) in CATEGORY_ORDER: vals["production"]= str(prod)
     if not vals:
         return None, {}
-
     worst_letter = min(vals.values(), key=lambda x: CATEGORY_ORDER[x])  # A worst
     drivers = {k: v for k, v in vals.items() if v == worst_letter}
     return worst_letter, drivers
@@ -40,7 +38,6 @@ def governing_cof(flam, tox, prod):
 # ------------------------
 # CCR classification
 # ------------------------
-# Default absolute bands (mm/y). Tune per material if needed.
 DEFAULT_CCR_BANDS = {
     "negligible": 0.05,  # < 0.05
     "low":        0.10,  # 0.05–0.10
@@ -50,9 +47,14 @@ DEFAULT_CCR_BANDS = {
 }
 
 def _label_from_bands(ccr, bands=DEFAULT_CCR_BANDS):
-    if ccr is None or (isinstance(ccr, float) and (math.isnan(ccr) or math.isinf(ccr))):
+    if ccr is None:
         return "unknown"
-    v = float(ccr)
+    try:
+        v = float(ccr)
+    except Exception:
+        return "unknown"
+    if math.isnan(v) or math.isinf(v):
+        return "unknown"
     if v < bands["negligible"]:
         return "negligible"
     if v < bands["low"]:
@@ -64,19 +66,13 @@ def _label_from_bands(ccr, bands=DEFAULT_CCR_BANDS):
     return "severe"
 
 def classify_ccr(ccr_value, dataset_mean=None, dataset_std=None, bands=DEFAULT_CCR_BANDS):
-    """
-    Classify CCR by absolute bands; if CCR > mean + 2σ, bump up one level (conservative override).
-    We never downgrade based on dataset stats.
-    """
     base = _label_from_bands(ccr_value, bands)
     if dataset_mean is None or dataset_std is None or base in ("unknown", "severe"):
         return base
-
     try:
         v = float(ccr_value)
     except Exception:
         return base
-
     if v > (float(dataset_mean) + 2 * float(dataset_std)):
         order = ["negligible", "low", "moderate", "high", "severe"]
         idx = order.index(base) if base in order else 2
@@ -84,132 +80,106 @@ def classify_ccr(ccr_value, dataset_mean=None, dataset_std=None, bands=DEFAULT_C
     return base
 
 # ------------------------
-# Inspection text
+# Short phrases (for compact sentence 2)
 # ------------------------
+def pof_band_short(pof):
+    p = int(pof) if pof is not None else None
+    if p == 1: return "PoF is very high (1)"
+    if p == 2: return "PoF is high (2)"
+    if p == 3: return "PoF is moderate (3)"
+    if p == 4: return "PoF is low (4)"
+    if p == 5: return "PoF is very low (5)"
+    return "PoF is assessed from available indicators"
+
+def ccr_short(label):
+    m = {
+        "severe": "CCR is severe",
+        "high": "CCR is high",
+        "moderate": "CCR is moderate",
+        "low": "CCR is low",
+        "negligible": "CCR is negligible",
+        "unknown": "CCR indicators are noted",
+    }
+    return m.get(str(label), "CCR indicators are noted")
+
 def inspection_text(risk_cat, priority_value):
     risk = str(risk_cat).strip().upper()
     if risk == "HIGH":
-        return "inspection requires very close attention with reduced intervals."
+        return "inspection requires reduced intervals"
     if risk == "MEDIUM HIGH":
-        return "inspection needs heightened monitoring with shorter-than-routine intervals."
+        return "inspection needs shorter-than-routine intervals"
     if risk == "MEDIUM":
-        return "inspection follows balanced monitoring on routine intervals."
+        return "inspection is on routine intervals"
     if risk == "LOW":
-        return "inspection can follow extended intervals with lower intensity."
-    return "inspection priority is recorded for this component."
+        return "inspection can follow extended intervals"
+    return "inspection priority is recorded"
 
 # ------------------------
-# Helper: asymmetry wording for Inventory / FAA
-# ------------------------
-def describe_inv_faa(inv_level, fa_level):
-    inv = str(inv_level).lower() if inv_level else "medium"
-    fa  = str(fa_level).lower()  if fa_level  else "medium"
-
-    if inv == "high" and fa == "low":
-        return "a large inventory outweighs a limited affected area, keeping consequence pronounced."
-    if inv == "low" and fa == "high":
-        return "a small inventory tempers release magnitude, but a wide affected area amplifies exposure."
-    if inv == "high" and fa == "medium":
-        return "a large inventory reinforces consequence despite a moderate affected area."
-    if inv == "medium" and fa == "high":
-        return "a moderate inventory with a broad affected area elevates dispersion and ignition opportunities."
-    if inv == "low" and fa == "medium":
-        return "a small inventory moderates magnitude while a moderate area keeps exposure meaningful."
-    if inv == "medium" and fa == "low":
-        return "a moderate inventory is tempered by a limited affected area."
-    if inv == "high" and fa == "high":
-        return "a large inventory and a broad affected area together intensify potential impact."
-    if inv == "low" and fa == "low":
-        return "a small inventory and limited affected area jointly mitigate consequence."
-    return "the inventory and affected area shape the potential release outcomes."
-
-# ------------------------
-# PoF band wording (PoF 1 worst … 5 best)
-# ------------------------
-def pof_band_phrase(pof, ccr_label):
-    p = int(pof) if pof is not None else None
-    ccr = str(ccr_label)
-
-    if p == 1:
-        base = "PoF is very high (1) with severe likelihood"
-    elif p == 2:
-        base = "PoF is high (2) with notable likelihood"
-    elif p == 3:
-        base = "PoF is moderate (3) with controlled likelihood"
-    elif p == 4:
-        base = "PoF is low (4) with minimal likelihood"
-    elif p == 5:
-        base = "PoF is very low (5) with negligible likelihood"
-    else:
-        base = "PoF is assessed from the available indicators"
-
-    ccr_map = {
-        "severe":    "the controlling corrosion rate is severe",
-        "high":      "the controlling corrosion rate is high",
-        "moderate":  "the controlling corrosion rate is moderate",
-        "low":       "the controlling corrosion rate is low",
-        "negligible":"the controlling corrosion rate is negligible",
-        "unknown":   "corrosion indicators are noted",
-    }
-    return f"{base}; {ccr_map.get(ccr, 'corrosion indicators are noted')}."
-
-# ------------------------
-# Opener sentence selector (reason-first)
+# Opener sentence (always includes fluid + phase when available)
 # ------------------------
 def opener_sentence(pof, cof_letter, drivers, fluid, phase, toxic, inv_level, fa_level, prod_cat, ccr_label):
-    fluid_txt = str(fluid).strip() if fluid not in [None, "nan", "NaN"] else ""
-    phase_txt = str(phase).strip().lower() if phase not in [None, "nan", "NaN"] else ""
-    toxic_txt = str(toxic).strip() if toxic not in [None, "nan", "NaN"] else ""
-    prod_txt  = str(prod_cat).strip() if prod_cat else ""
+    # Normalize service terms
+    fluid_txt = (str(fluid).strip() if fluid not in [None, "nan", "NaN"] else "")
+    phase_txt = (str(phase).strip().lower() if phase not in [None, "nan", "NaN"] else "")
+    toxic_txt = (str(toxic).strip() if toxic not in [None, "nan", "NaN"] else "")
 
-    pof_sev = int(pof) if pof is not None else 3          # 1 worst … 5 best
-    cof_sev = CATEGORY_ORDER.get(str(cof_letter), 3)       # A=1 … E=5
+    # Build "fluid + phase" always when present
+    service = ""
+    if fluid_txt and phase_txt: service = f"{fluid_txt} {phase_txt}"
+    elif fluid_txt:             service = fluid_txt
+    elif phase_txt:             service = phase_txt  # rare, but acceptable
 
+    # Inventory/area cue (no numbers)
+    fa = (fa_level or "").lower()
+    fa_phrase = "broad affected area" if fa == "high" else ("limited affected area" if fa == "low" else "moderate affected area")
+
+    # Severity comparison on 1..5 (lower worse)
+    pof_sev = int(pof) if pof is not None else 3
+    cof_sev = CATEGORY_ORDER.get(str(cof_letter), 3)
     gap = abs(pof_sev - cof_sev)
     both_due_to_ccr = (pof_sev >= 4) and (ccr_label in ["high", "severe"])
 
-    service_bits = []
-    if fluid_txt and phase_txt: service_bits.append(f"{fluid_txt} in {phase_txt} phase")
-    elif fluid_txt: service_bits.append(fluid_txt)
+    # Compose “reason”
+    reason_bits = []
+    if service: reason_bits.append(service)
     if toxic_txt and toxic_txt.lower() not in ("nan", "none", "no"):
-        service_bits.append(f"with toxic {toxic_txt}")
-    service_reason = ", ".join(service_bits) if service_bits else "the handled service"
+        reason_bits.append(f"with toxic {toxic_txt}")
+    reason = " ".join(reason_bits) if reason_bits else "the handled service"
 
-    inv = (inv_level or "").lower()
-    fa  = (fa_level  or "").lower()
-    fa_phrase = "broad affected area" if fa == "high" else ("limited affected area" if fa == "low" else "moderate affected area")
-
+    # CoF-driven helpers
     def cof_single(driver_key, letter):
         if driver_key == "flammable":
-            return f"driven primarily by CoF, dominated by flammable fluid Category {letter}, because {service_reason} and the {fa_phrase} elevate ignition potential."
+            return f"driven by CoF, dominated by flammable Category {letter}, because {reason} and the {fa_phrase} elevate ignition potential"
         if driver_key == "toxic":
-            return f"driven primarily by CoF, dominated by toxic exposure Category {letter}, because {service_reason} increases exposure potential."
+            return f"driven by CoF, dominated by toxic Category {letter}, because {reason} increases exposure potential"
         if driver_key == "production":
-            return f"driven primarily by CoF, dominated by lost-production Category {letter}, because the service is outage-sensitive and downtime impact is substantial."
-        return f"driven primarily by CoF, governed by Category {letter}."
+            return f"driven by CoF, dominated by lost-production Category {letter}, because outage sensitivity is substantial"
+        return f"driven by CoF, governed by Category {letter}"
 
     def cof_tie(keys, letter):
         s = set(keys)
         if s == {"flammable", "toxic"}:
-            return f"consequence-led, jointly governed by flammable and toxic Category {letter}, because {service_reason} presents ignition and exposure hazards, amplified by the {fa_phrase}."
+            return f"consequence-led and jointly governed by flammable and toxic Category {letter}, because {reason} presents ignition and exposure hazards and the {fa_phrase} amplifies reach"
         if s == {"flammable", "production"}:
-            return f"consequence-led, jointly governed by flammable and production Category {letter}, since {service_reason} raises fire potential and the service is throughput-critical."
+            return f"consequence-led and jointly governed by flammable and production Category {letter}, since {reason} raises fire potential and the service is throughput-critical"
         if s == {"toxic", "production"}:
-            return f"consequence-led, jointly governed by toxic and production Category {letter}, as exposure concerns and outage sensitivity together dominate."
-        return f"consequence-led, jointly governed by {' and '.join(keys)} Category {letter}."
+            return f"consequence-led and jointly governed by toxic and production Category {letter}, as exposure concerns and outage sensitivity together dominate"
+        return f"consequence-led and jointly governed by Category {letter}"
 
+    # Decide opener
     if both_due_to_ccr or gap == 0:
-        return f"the risk results from both PoF and CoF, because {service_reason} is material while likelihood remains non-negligible."
+        return f"resulting from both PoF and CoF, because {reason} is material while likelihood remains non-negligible"
     if pof_sev + 1 <= cof_sev:
+        # PoF worse → PoF-driven
         if ccr_label in ["high", "severe"]:
-            return f"driven mainly by PoF, with elevated likelihood reinforced by a {ccr_label} controlling corrosion rate."
-        return f"driven mainly by PoF, as the likelihood outweighs consequence effects."
-    else:
-        if not drivers:
-            return f"driven primarily by CoF."
-        if len(drivers) == 1:
-            dk = list(drivers.keys())[0]
-            return cof_single(dk, cof_letter)
-        if len(drivers) == 2:
-            return cof_tie(list(drivers.keys()), cof_letter)
-        return f"consequence-led, with flammable, toxic, and production all at Category {cof_letter}, collectively dominating given {service_reason} and the {fa_phrase}."
+            return f"driven mainly by PoF, as elevated likelihood is reinforced by a {ccr_label} CCR in {service or 'service'}"
+        return f"driven mainly by PoF, with likelihood outweighing consequence effects"
+    # Otherwise CoF-driven
+    if not drivers:
+        return f"driven by CoF"
+    if len(drivers) == 1:
+        dk = list(drivers.keys())[0]
+        return cof_single(dk, cof_letter)
+    if len(drivers) == 2:
+        return cof_tie(list(drivers.keys()), cof_letter)
+    return f"consequence-led, with flammable, toxic, and production all at Category {cof_letter}, collectively dominating due to {reason} and the {fa_phrase}"
