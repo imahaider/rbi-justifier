@@ -27,4 +27,4 @@ OPTIONAL_COLUMNS = [
 CATEGORY_ORDER = {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}  # lower = worse
 
 def missing_columns(df):
-    return [c for c in REQUIRED_COLUMNS if c not in df.columns]
+    return [c for c in REQUIRED_COLUMNS if c not in df.columns] 
